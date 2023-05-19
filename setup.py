@@ -5,7 +5,6 @@ import fnmatch
 import io
 import shutil
 import subprocess
-import sys
 
 from pathlib import Path
 from zipfile import ZipFile
@@ -41,13 +40,14 @@ def download(url:str, dump:bool) -> None:
 
 def main():
     args = parser.parse_args()
+    all = not any((args.download, args.compile)) # if none given, execute all
 
-    if args.download:
+    if args.download or all:
         repo = "https://github.com/BtbN/FFmpeg-Builds/"
         file = "ffmpeg-n6.0-latest-win64-gpl-6.0.zip"
         download(f"{repo}releases/download/latest/{file}", args.dump)
 
-    if args.compile:
+    if args.compile or all:
         if shutil.which("iscc") is None:
             raise FileNotFoundError("iscc.exe not found in PATH environment variable.")
         subprocess.run(["iscc", "installer.iss"])
