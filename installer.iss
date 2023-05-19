@@ -4,9 +4,9 @@
 ; see: https://stackoverflow.com/a/46609047
 #include "environment.iss"
 
-#define AppName "FFmpeg"
-#define FullAppName "FFmpeg Windows Installer"
-#define AppVersion "for Windows"
+#define AppName "PhoneWaver Codec Extension"
+#define FullAppName "PhoneWaver FFmpeg Extension"
+#define AppVersion "1.0"
 #define AppPublisher "photoboothproshop.de"
 #define AppURL "https://photoboothproshop.de/"
 #define AppSourceFolder ".\workdir\ffmpeg"
@@ -23,7 +23,6 @@ AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
 DefaultDirName={sd}\ffmpeg
-;DisableDirPage=yes
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
 LicenseFile={#AppSourceFolder}\LICENSE.txt
