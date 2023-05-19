@@ -14,7 +14,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={AE4E96CB-40CA-4F29-8C83-95E4BB6E5F82}
+AppId={{AE4E96CB-40CA-4F29-8C83-95E4BB6E5F82}
 AppName={#AppName}
 AppVersion={#AppVersion}
 ;AppVerName={#FullAppName} {#AppVersion}
@@ -46,7 +46,7 @@ Source: "{#AppSourceFolder}\*"; DestDir: "{app}"; Flags: ignoreversion recursesu
 
 [CustomMessages]
 AddToPath = Add to PATH variable (recommended)
-german.AddToPath = Zur Umgebungsvariable PATH hinzufügen (empfohlen)
+german.AddToPath = Zur Umgebungsvariable PATH hinzufï¿½gen (empfohlen)
 
 
 
