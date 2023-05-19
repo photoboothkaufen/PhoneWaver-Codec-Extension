@@ -1,5 +1,8 @@
 # FFmpeg Windows Installer
-Setup wizard for FFmpeg using Inno Setup
+Setup wizard for FFmpeg using Inno Setup. Doesn't reinvent the wheel.
+
+## Details
+This script downloads the latest GPL build of FFmpeg for x64 Windows from [BtbN's FFmpeg Builds](https://github.com/BtbN/FFmpeg-Builds/). It uses Inno Setup to compile a setup executable that allows for adding the installation path to the `PATH` variable.
 
 ## Usage
 To download the latest GPL FFmpeg binaries for Windows use
