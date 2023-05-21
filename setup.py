@@ -12,6 +12,11 @@ from zipfile import ZipFile
 import requests
 
 
+
+FFMPEG_EXTRACT_PATH = Path(__file__).parent / "workdir" / "ffmpeg"
+
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--download", action="store_true")
 parser.add_argument("--compile", action="store_true")
@@ -34,7 +39,12 @@ def download(url:str, dump:bool) -> None:
                 continue
 
             zipinfo.filename = zipinfo.filename.replace(main_folder, "")
-            z.extract(zipinfo, Path(__file__).parent / "workdir" / "ffmpeg")
+            z.extract(zipinfo, FFMPEG_EXTRACT_PATH)
+
+    for element in (FFMPEG_EXTRACT_PATH / "bin").iterdir():
+        if not element.is_file():
+            continue
+        element.rename(element.with_stem(f"phonewaver-{element.stem}"))
 
 
 

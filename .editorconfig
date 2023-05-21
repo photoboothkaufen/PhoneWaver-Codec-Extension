@@ -22,3 +22,5 @@ indent_size = 3
 [*.iss]
 # Inno Setup files for Windows
 end_of_line = crlf
+indent_style = space
+indent_size = 2

@@ -5,7 +5,6 @@
 #include "environment.iss"
 
 #define AppName "PhoneWaver Codec Extension"
-#define FullAppName "PhoneWaver FFmpeg Extension"
 #define AppVersion "1.0"
 #define AppPublisher "photoboothproshop.de"
 #define AppURL "https://photoboothproshop.de/"
@@ -17,19 +16,20 @@
 AppId={{AE4E96CB-40CA-4F29-8C83-95E4BB6E5F82}
 AppName={#AppName}
 AppVersion={#AppVersion}
-;AppVerName={#FullAppName} {#AppVersion}
+;AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-DefaultDirName={sd}\ffmpeg
+DefaultDirName={autopf}\{#AppName}
+;DefaultDirName={sd}\ffmpeg
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
 LicenseFile={#AppSourceFolder}\LICENSE.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=.\workdir
-OutputBaseFilename={#FullAppName}
+OutputBaseFilename={#AppName}
 ChangesEnvironment=yes
 Compression=lzma
 SolidCompression=yes
@@ -56,12 +56,12 @@ Name: addToPath; Description: {cm:AddToPath}; Flags: restart
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
-    if (CurStep = ssPostInstall) and WizardIsTaskSelected('addToPath')
-     then EnvAddPath(ExpandConstant('{app}') +'\bin');
+  if (CurStep = ssPostInstall) and WizardIsTaskSelected('addToPath')
+    then EnvAddPath(ExpandConstant('{app}') +'\bin');
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
-    if CurUninstallStep = usPostUninstall
+  if CurUninstallStep = usPostUninstall
     then EnvRemovePath(ExpandConstant('{app}') +'\bin');
 end;
