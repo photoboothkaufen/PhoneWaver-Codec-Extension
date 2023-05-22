@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 
-import argparse
 import fnmatch
-import io
+import pathlib
 import shutil
 import subprocess
+import zipfile
 
-from pathlib import Path
-from zipfile import ZipFile
+from argparse import ArgumentParser
+from io import BytesIO
 
+import tqdm
 import requests
 
 
 
-FFMPEG_EXTRACT_PATH = Path(__file__).parent / "workdir" / "ffmpeg"
+FFMPEG_EXTRACT_PATH = pathlib.Path(__file__).parent / "workdir" / "ffmpeg"
 
-
-
-parser = argparse.ArgumentParser()
+parser = ArgumentParser()
 parser.add_argument("--download", action="store_true")
 parser.add_argument("--compile", action="store_true")
 parser.add_argument("--dump", action="store_true")
@@ -25,26 +24,71 @@ parser.add_argument("--dump", action="store_true")
 
 
 def download(url:str, dump:bool) -> None:
-    r = requests.get(url, allow_redirects=True)
+    content = bytearray()
 
+    # request a download
+    r = requests.get(url, allow_redirects=True, stream=True)
+
+    pbar_settings = {
+        "desc": "Download",
+        "total": int(r.headers.get("content-length", 0)),
+        "unit": "iB",
+        "unit_scale": True,
+    }
+
+    # buffer download into content bytearray and visualize with progress bar
+    with tqdm.tqdm(**pbar_settings) as pbar:
+        for data in r.iter_content(1024):
+            pbar.update(len(data))
+            content.extend(data)
+
+    # dump to zip file if needed
     if dump:
         with open(".download.zip", "wb") as dumpfile:
-            dumpfile.write(r.content)
+            dumpfile.write(content)
 
-    with ZipFile(io.BytesIO(r.content)) as z:
+    # delete existing download
+    if FFMPEG_EXTRACT_PATH.exists():
+        shutil.rmtree(FFMPEG_EXTRACT_PATH)
+
+    # open downloaded zip data
+    with zipfile.ZipFile(BytesIO(content)) as z:
         main_folder = fnmatch.filter(z.namelist(), "*/")[0]
-        for zipinfo in z.infolist():
-            # remove main_folder prefix
-            if zipinfo.filename == main_folder:
-                continue
 
-            zipinfo.filename = zipinfo.filename.replace(main_folder, "")
+        # extract everything from first child directory
+        for zipinfo in tqdm.tqdm(z.infolist(), desc="Extract"):
+            file_name = zipinfo.filename
+
+            if file_name == main_folder:
+                continue # if file/dir is main folder
+            if not file_name.startswith(main_folder):
+                continue # if file/dir is not from main folder, e.g. siblings
+
+            zipinfo.filename = file_name.replace(main_folder, "")
             z.extract(zipinfo, FFMPEG_EXTRACT_PATH)
 
-    for element in (FFMPEG_EXTRACT_PATH / "bin").iterdir():
-        if not element.is_file():
-            continue
-        element.rename(element.with_stem(f"phonewaver-{element.stem}"))
+    # add prefix to main executables to avoid conflicts when added to PATH
+    bin_dir = FFMPEG_EXTRACT_PATH / "bin"
+    if bin_dir.exists():
+        for element in bin_dir.iterdir():
+            if not element.is_file():
+                continue
+            element.rename(element.with_stem(f"phonewaver-{element.stem}"))
+
+
+
+def inno_compile():
+    if shutil.which("iscc") is None:
+        raise FileNotFoundError("iscc.exe not found in PATH environment variable.")
+
+    if not FFMPEG_EXTRACT_PATH.exists():
+        raise FileNotFoundError(
+            "Binary files are missing. "
+            "Please download first with --download flag "
+            "or leave all flags to download and compile in one step."
+        )
+
+    subprocess.run(["iscc", "installer.iss"])
 
 
 
@@ -58,9 +102,7 @@ def main():
         download(f"{repo}releases/download/latest/{file}", args.dump)
 
     if args.compile or all:
-        if shutil.which("iscc") is None:
-            raise FileNotFoundError("iscc.exe not found in PATH environment variable.")
-        subprocess.run(["iscc", "installer.iss"])
+        inno_compile()
 
 
 
