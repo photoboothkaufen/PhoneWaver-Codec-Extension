@@ -29,7 +29,7 @@ LicenseFile={#AppSourceFolder}\LICENSE.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=.\workdir
-OutputBaseFilename={#AppName}
+OutputBaseFilename={#AppName} {#AppVersion} (Setup)
 ChangesEnvironment=yes
 Compression=lzma
 SolidCompression=yes
